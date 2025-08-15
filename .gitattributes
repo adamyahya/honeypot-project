@@ -1,0 +1,20 @@
+# Treat text files normally
+*.py text
+*.html text
+*.md text
+
+# Treat SSH keys as binary so line endings are not converted
+*.key binary
+
+# Public key can stay text
+*.pub text
+# Treat text files normally
+*.py text
+*.html text
+*.md text
+
+# Treat SSH keys as binary so line endings are not converted
+*.key binary
+
+# Public key can stay text
+*.pub text

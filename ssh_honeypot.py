@@ -1,8 +1,9 @@
 import logging
 from logging.handlers import RotatingFileHandler
 import socket
-import paramiko
 import threading
+import paramiko
+
 
 
 # ---------------------------------------------------------------------------
@@ -76,15 +77,17 @@ def emulated_shell(channel: paramiko.Channel, client_ip: str):
     ),
 
     # Network / outbound recon
-    b'curl http://example.com/test': b'curl: (7) Failed to connect to example.com port 80: Connection timed out',
-    b'wget http://example.com/test': b'--2025--  Resolving example.com ... failed: Name or service not known.',
+    b'curl http://example.com/test':
+    b'curl: (7) Failed to connect to example.com port 80: Connection timed out',
+    b'wget http://example.com/test':
+    b'--2025--  Resolving example.com ... failed: Name or service not known.',
 
     # Privilege escalation
     b'sudo -l': (
-        b'Matching Defaults entries for corpuser1 on corp-jumpbox2:\n'
-        b'    env_reset, mail_badpass, secure_path=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\n\n'
-        b'User corpuser1 may run the following commands on corp-jumpbox2:\n'
-        b'    (ALL : ALL) /usr/bin/less\n'
+    b'Matching Defaults entries for corpuser1 on corp-jumpbox2:\n'
+    b'env_reset, mail_badpass,secure_path=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\n\n'
+    b'User corpuser1 may run the following commands on corp-jumpbox2:\n'
+    b'(ALL : ALL) /usr/bin/less\n'
     ),
     b'sudo su': b'[sudo] password for corpuser1: ',
     b'sudo id': b'[sudo] password for corpuser1: ',
@@ -137,12 +140,13 @@ class Server(paramiko.ServerInterface):
         return "password"
 
     def check_auth_password(self, username, password):
-        funnel_logger.info(f"Client {self.client_ip} attempted connection with username: {username} password: {password}")
+        funnel_logger.info(
+        f"Client {self.client_ip} attempted connection with username:{username} password: {password}")
         creds_logger.info(f"{self.client_ip}, {username}, {password}")
 
         # if credentials specified, enforce them
         if self.input_username and self.input_password:
-            return paramiko.AUTH_SUCCESSFUL if (username == self.input_username and password == self.input_password) else paramiko.AUTH_FAILED
+            return paramiko.AUTH_SUCCESSFUL if (username == self.input_username and password == self.input_password)else paramiko.AUTH_FAILED
 
         # otherwise, always accept
         return paramiko.AUTH_SUCCESSFUL
@@ -216,4 +220,3 @@ def honeypot(address: str, port: int, username=None, password=None):
 
         except Exception as e:
             print(f"[!] Accept failed: {e}")
-
